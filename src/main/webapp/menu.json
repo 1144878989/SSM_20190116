@@ -1,0 +1,17 @@
+[
+  {
+  "id":1,
+  "text":"机场管理",
+  "attributes":"airportMag.jsp"
+  },
+  {
+    "id":2,
+    "text":"航班管理",
+    "attributes":"flightMag.jsp"
+  },
+  {
+    "id":3,
+    "text":"机票管理",
+    "attributes":"ticketMag.jsp"
+  }
+]
