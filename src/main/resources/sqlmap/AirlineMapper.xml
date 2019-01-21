@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springmvc.dao.AirlineMapper" >
+  <resultMap id="BaseResultMap" type="com.springmvc.entity.Airline" >
+    <id column="airline_no" property="airlineNo" jdbcType="INTEGER" />
+    <result column="airline_name" property="airlineName" jdbcType="VARCHAR" />
+    <result column="airline_code" property="airlineCode" jdbcType="VARCHAR" />
+    <result column="airline_ics" property="airlineIcs" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    airline_no, airline_name, airline_code, airline_ics
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from airline
+    where airline_no = #{airlineNo,jdbcType=INTEGER}
+  </select>
+  <select id="findAllAirline" resultType="com.springmvc.entity.Airline">
+    select
+    <include refid="Base_Column_List" />
+    from airline
+  </select>
+  <select id="findAirlineByCondition" resultType="com.springmvc.entity.Airline">
+    select
+    <include refid="Base_Column_List" />
+    from airline
+    <trim prefix="WHERE" prefixOverrides="AND |OR">
+      <if test="airlineCode != null and airlineCode.length()>0"> AND airline_code=#{airlineCode,jdbcType=VARCHAR}</if>
+      <if test="airlineName != null and airlineName.length()>0"> AND airline_name=#{airlineName,jdbcType=VARCHAR}</if>
+    </trim>
+  </select>
+  <select id="getAirlineTree" resultType="com.springmvc.entity.TreeData">
+  select airline_no as id,airline_name as text
+  from airline
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from airline
+    where airline_no = #{airlineNo,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.springmvc.entity.Airline" >
+    insert into airline (airline_no, airline_name, airline_code,
+      airline_ics)
+    values (#{airlineNo,jdbcType=INTEGER}, #{airlineName,jdbcType=VARCHAR}, #{airlineCode,jdbcType=VARCHAR},
+      #{airlineIcs,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.springmvc.entity.Airline" >
+    insert into airline
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="airlineNo != null" >
+        airline_no,
+      </if>
+      <if test="airlineName != null" >
+        airline_name,
+      </if>
+      <if test="airlineCode != null" >
+        airline_code,
+      </if>
+      <if test="airlineIcs != null" >
+        airline_ics,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="airlineNo != null" >
+        #{airlineNo,jdbcType=INTEGER},
+      </if>
+      <if test="airlineName != null" >
+        #{airlineName,jdbcType=VARCHAR},
+      </if>
+      <if test="airlineCode != null" >
+        #{airlineCode,jdbcType=VARCHAR},
+      </if>
+      <if test="airlineIcs != null" >
+        #{airlineIcs,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.springmvc.entity.Airline" >
+    update airline
+    <set >
+      <if test="airlineName != null" >
+        airline_name = #{airlineName,jdbcType=VARCHAR},
+      </if>
+      <if test="airlineCode != null" >
+        airline_code = #{airlineCode,jdbcType=VARCHAR},
+      </if>
+      <if test="airlineIcs != null" >
+        airline_ics = #{airlineIcs,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where airline_no = #{airlineNo,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.springmvc.entity.Airline" >
+    update airline
+    set airline_name = #{airlineName,jdbcType=VARCHAR},
+      airline_code = #{airlineCode,jdbcType=VARCHAR},
+      airline_ics = #{airlineIcs,jdbcType=VARCHAR}
+    where airline_no = #{airlineNo,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springmvc.dao.FlightMapper" >
+  <resultMap id="BaseResultMap" type="com.springmvc.entity.Flight" >
+    <id column="flight_no" property="flightNo" jdbcType="INTEGER" />
+    <result column="flight_takeoff_time" property="flightTakeoffTime" jdbcType="VARCHAR" />
+    <result column="flight_land_time" property="flightLandTime" jdbcType="VARCHAR" />
+    <result column="flight_time" property="flightTime" jdbcType="INTEGER" />
+    <result column="flight_takeoff_port" property="flightTakeoffPort" jdbcType="INTEGER" />
+    <result column="flight_land_port" property="flightLandPort" jdbcType="INTEGER" />
+    <result column="airline_no" property="airlineNo" jdbcType="INTEGER" />
+    <result column="can_fly" property="canFly" jdbcType="BIT" />
+    <result column="flight_code" property="flightCode" jdbcType="VARCHAR" />
+    <result column="flight_faremoney" property="flightFaremoney" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+flight_no, flight_takeoff_time, flight_land_time, flight_takeoff_port,
+    flight_land_port, airline_no, can_fly, flight_code, flight_faremoney,flight_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from flight
+    where flight_no = #{flightNo,jdbcType=INTEGER}
+  </select>
+  <select id="findAllFlight" resultType="com.springmvc.entity.Flight">
+    select
+    <include refid="Base_Column_List" />
+    from flight
+  </select>
+  <select id="findFlightByCondition" resultType="com.springmvc.entity.Flight">
+    select
+    <include refid="Base_Column_List" />
+    from flight
+    <trim prefix="WHERE" prefixOverrides="AND |OR">
+      <if test="flightTakeoffTime != null and flightTakeoffTime.length()>0"> AND flight_takeoff_time=#{flightTakeoffTime,jdbcType=VARCHAR}</if>
+      <if test="flightLandTime != null and flightLandTime.length()>0"> AND flight_land_time=#{flightLandTime,jdbcType=VARCHAR}</if>
+      <if test="flightCode != null and flightCode.length()>0"> AND flight_code=#{flightCode,jdbcType=VARCHAR}</if>
+    </trim>
+  </select>
+  <select id="getFlightsOfAirline" resultType="com.springmvc.entity.Flight">
+      select flight_no as flightNo, flight_takeoff_time as flightTakeoffTime, flight_land_time as flightLandTime,
+		can_fly as canFly, flight_code as flightCode, flight_faremoney as flightFaremoney,flight_time as flightTime,
+		takeoff_port.terminal_name as flightTakeoffPortName,
+		land_port.terminal_name as flightLandPortName
+      from flight,terminal as takeoff_port,terminal as land_port
+      where flight_takeoff_port=takeoff_port.terminal_no and flight_land_port=land_port.terminal_no
+      and airline_no = #{airlineNo,jdbcType=INTEGER};
+  </select>
+  <select id="getFlightTree" resultType="com.springmvc.entity.TreeData">
+    select flight_no as id,flight_code as text
+    from flight
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from flight
+    where flight_no = #{flightNo,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.springmvc.entity.Flight" >
+    insert into flight (flight_no, flight_takeoff_time,
+      flight_land_time, flight_takeoff_port, flight_land_port,
+      airline_no, can_fly, flight_code, 
+      flight_faremoney,flight_time)
+    values (#{flightNo,jdbcType=INTEGER}, #{flightTakeoffTime,jdbcType=VARCHAR},
+      #{flightLandTime,jdbcType=VARCHAR}, #{flightTakeoffPort,jdbcType=INTEGER}, #{flightLandPort,jdbcType=INTEGER},
+      #{airlineNo,jdbcType=INTEGER}, #{canFly,jdbcType=BIT}, #{flightCode,jdbcType=VARCHAR}, 
+      #{flightFaremoney,jdbcType=DOUBLE}, #{flightTime,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.springmvc.entity.Flight" >
+    insert into flight
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="flightNo != null" >
+      flight_no,
+      </if>
+      <if test="flightTakeoffTime != null" >
+        flight_takeoff_time,
+      </if>
+      <if test="flightLandTime != null" >
+        flight_land_time,
+      </if>
+      <if test="flightTakeoffPort != null" >
+        flight_takeoff_port,
+      </if>
+      <if test="flightLandPort != null" >
+        flight_land_port,
+      </if>
+      <if test="airlineNo != null" >
+        airline_no,
+      </if>
+      <if test="canFly != null" >
+        can_fly,
+      </if>
+      <if test="flightCode != null" >
+        flight_code,
+      </if>
+      <if test="flightTime != null" >
+        flight_time,
+      </if>
+      <if test="flightFaremoney != null" >
+        flight_faremoney,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="flightNo != null" >
+        #{flightNo,jdbcType=INTEGER},
+      </if>
+      <if test="flightTakeoffTime != null" >
+        #{flightTakeoffTime,jdbcType=VARCHAR},
+      </if>
+      <if test="flightLandTime != null" >
+        #{flightLandTime,jdbcType=VARCHAR},
+      </if>
+      <if test="flightTakeoffPort != null" >
+        #{flightTakeoffPort,jdbcType=INTEGER},
+      </if>
+      <if test="flightLandPort != null" >
+        #{flightLandPort,jdbcType=INTEGER},
+      </if>
+      <if test="airlineNo != null" >
+        #{airlineNo,jdbcType=INTEGER},
+      </if>
+      <if test="canFly != null" >
+        #{canFly,jdbcType=BIT},
+      </if>
+      <if test="flightCode != null" >
+        #{flightCode,jdbcType=VARCHAR},
+      </if>
+      <if test="flightTime != null" >
+        #{flightTime,jdbcType=INTEGER},
+      </if>
+      <if test="flightFaremoney != null" >
+        #{flightFaremoney,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.springmvc.entity.Flight" >
+    update flight
+    <set >
+      <if test="flightTakeoffTime != null" >
+      flight_takeoff_time = #{flightTakeoffTime,jdbcType=VARCHAR},
+      </if>
+      <if test="flightLandTime != null" >
+        flight_land_time = #{flightLandTime,jdbcType=VARCHAR},
+      </if>
+      <if test="flightTakeoffPort != null" >
+        flight_takeoff_port = #{flightTakeoffPort,jdbcType=INTEGER},
+      </if>
+      <if test="flightLandPort != null" >
+        flight_land_port = #{flightLandPort,jdbcType=INTEGER},
+      </if>
+      <if test="airlineNo != null" >
+        airline_no = #{airlineNo,jdbcType=INTEGER},
+      </if>
+      <if test="canFly != null" >
+        can_fly = #{canFly,jdbcType=BIT},
+      </if>
+      <if test="flightCode != null" >
+        flight_code = #{flightCode,jdbcType=VARCHAR},
+      </if>
+      <if test="flightFaremoney != null" >
+        flight_faremoney = #{flightFaremoney,jdbcType=DOUBLE},
+      </if>
+      <if test="flightTime != null" >
+        flight_time=#{flightTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where flight_no = #{flightNo,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.springmvc.entity.Flight" >
+    update flight
+    set flight_takeoff_time = #{flightTakeoffTime,jdbcType=VARCHAR},
+      flight_land_time = #{flightLandTime,jdbcType=VARCHAR},
+      flight_takeoff_port = #{flightTakeoffPort,jdbcType=INTEGER},
+      flight_land_port = #{flightLandPort,jdbcType=INTEGER},
+      airline_no = #{airlineNo,jdbcType=INTEGER},
+      can_fly = #{canFly,jdbcType=BIT},
+      flight_code = #{flightCode,jdbcType=VARCHAR},
+      flight_time=#{flightTime,jdbcType=INTEGER},
+      flight_faremoney = #{flightFaremoney,jdbcType=DOUBLE}
+    where flight_no = #{flightNo,jdbcType=INTEGER}
+  </update>
+</mapper>

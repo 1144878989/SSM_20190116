@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springmvc.dao.TerminalMapper" >
+  <resultMap id="BaseResultMap" type="com.springmvc.entity.Terminal" >
+    <id column="terminal_no" property="terminalNo" jdbcType="INTEGER" />
+    <result column="terminal_name" property="terminalName" jdbcType="VARCHAR" />
+    <result column="terminal_address" property="terminalAddress" jdbcType="VARCHAR" />
+    <result column="airport_no" property="airportNo" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    terminal_no, terminal_name, terminal_address, airport_no
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from terminal
+    where terminal_no = #{terminalNo,jdbcType=INTEGER}
+  </select>
+    <select id="findAllTerminal" resultType="com.springmvc.entity.Terminal">
+      select
+      <include refid="Base_Column_List" />
+      from terminal
+    </select>
+  <select id="findTerminalByCondition" resultType="com.springmvc.entity.Terminal">
+    select
+    <include refid="Base_Column_List" />
+    from terminal
+    <trim prefix="WHERE" prefixOverrides="AND |OR">
+      <if test="terminalName != null and terminalName.length()>0"> AND terminal_name=#{terminalName,jdbcType=VARCHAR}</if>
+    </trim>
+  </select>
+  <select id="findTerminalFromAirport" resultType="com.springmvc.entity.Terminal">
+    select
+    <include refid="Base_Column_List" />
+    from terminal
+    where terminal.airport_no=#{airportNo,jdbcType=INTEGER}
+    and terminal.terminal_name=#{terminalName,jdbcType=VARCHAR}
+  </select>
+  <select id="findTerminalsOfAirport" resultType="com.springmvc.entity.Terminal">
+    select
+    terminal_no as terminalNo, terminal_name as terminalName, terminal_address as terminalAddress, airport_address as airportAddress
+    from terminal,airport
+    where terminal.airport_no=#{airportNo,jdbcType=INTEGER} and terminal.airport_no=airport.airport_no;
+  </select>
+    <select id="getTerminalTree" resultType="com.springmvc.entity.TreeData">
+      select terminal_no as id,terminal_name as text
+      from terminal
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from terminal
+    where terminal_no = #{terminalNo,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.springmvc.entity.Terminal" >
+    insert into terminal (terminal_no, terminal_name, terminal_address, 
+      airport_no)
+    values (#{terminalNo,jdbcType=INTEGER}, #{terminalName,jdbcType=VARCHAR}, #{terminalAddress,jdbcType=VARCHAR}, 
+      #{airportNo,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.springmvc.entity.Terminal" >
+    insert into terminal
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="terminalNo != null" >
+        terminal_no,
+      </if>
+      <if test="terminalName != null" >
+        terminal_name,
+      </if>
+      <if test="terminalAddress != null" >
+        terminal_address,
+      </if>
+      <if test="airportNo != null" >
+        airport_no,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="terminalNo != null" >
+        #{terminalNo,jdbcType=INTEGER},
+      </if>
+      <if test="terminalName != null" >
+        #{terminalName,jdbcType=VARCHAR},
+      </if>
+      <if test="terminalAddress != null" >
+        #{terminalAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="airportNo != null" >
+        #{airportNo,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.springmvc.entity.Terminal" >
+    update terminal
+    <set >
+      <if test="terminalName != null" >
+        terminal_name = #{terminalName,jdbcType=VARCHAR},
+      </if>
+      <if test="terminalAddress != null" >
+        terminal_address = #{terminalAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="airportNo != null" >
+        airport_no = #{airportNo,jdbcType=INTEGER},
+      </if>
+    </set>
+    where terminal_no = #{terminalNo,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.springmvc.entity.Terminal" >
+    update terminal
+    set terminal_name = #{terminalName,jdbcType=VARCHAR},
+      terminal_address = #{terminalAddress,jdbcType=VARCHAR},
+      airport_no = #{airportNo,jdbcType=INTEGER}
+    where terminal_no = #{terminalNo,jdbcType=INTEGER}
+  </update>
+</mapper>

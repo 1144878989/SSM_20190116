@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springmvc.dao.CityMapper" >
+  <resultMap id="BaseResultMap" type="com.springmvc.entity.City" >
+    <id column="city_no" property="cityNo" jdbcType="INTEGER" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="TreeDataMap" type="com.springmvc.entity.TreeData">
+  <id column="city_no" jdbcType="INTEGER" property="id" />
+  <result column="city_name" jdbcType="VARCHAR" property="text"/>
+  <association property="children" javaType="com.springmvc.entity.TreeData">
+    <id column="airport_no" jdbcType="INTEGER" property="id"/>
+    <result  column="airport_name" jdbcType="VARCHAR" property="text"/>
+  </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    city_no, city_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from city
+    where city_no = #{cityNo,jdbcType=INTEGER}
+  </select>
+    <select id="findAllCity" resultType="com.springmvc.entity.City">
+      select
+      <include refid="Base_Column_List" />
+      from city
+    </select>
+  <select id="findCityByCondition" resultType="com.springmvc.entity.City">
+    select
+    <include refid="Base_Column_List" />
+    from city
+    <trim prefix="WHERE" suffixOverrides="and">
+      <if test="cityName != null and cityName.length()>0">city_name=#{cityName,jdbcType=VARCHAR} AND</if>
+    </trim>
+  </select>
+  <select id="getCityAirportTree" resultMap="TreeDataMap">
+    SELECT city.city_no,city.city_name,airport.airport_no,airport.airport_name
+    FROM city LEFT JOIN airport ON	city.city_no = airport.city_no
+  </select>
+  <select id="findAllCityTreeData" resultType="com.springmvc.entity.TreeData">
+    SELECT city_no as id,city_name as text
+    from city
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from city
+    where city_no = #{cityNo,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.springmvc.entity.City" >
+    insert into city (city_no, city_name)
+    values (#{cityNo,jdbcType=INTEGER}, #{cityName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.springmvc.entity.City" >
+    insert into city
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cityNo != null" >
+        city_no,
+      </if>
+      <if test="cityName != null" >
+        city_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cityNo != null" >
+        #{cityNo,jdbcType=INTEGER},
+      </if>
+      <if test="cityName != null" >
+        #{cityName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.springmvc.entity.City" >
+    update city
+    <set >
+      <if test="cityName != null" >
+        city_name = #{cityName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where city_no = #{cityNo,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.springmvc.entity.City" >
+    update city
+    set city_name = #{cityName,jdbcType=VARCHAR}
+    where city_no = #{cityNo,jdbcType=INTEGER}
+  </update>
+</mapper>

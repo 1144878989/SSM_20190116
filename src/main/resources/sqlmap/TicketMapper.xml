@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springmvc.dao.TicketMapper">
+  <resultMap id="BaseResultMap" type="com.springmvc.entity.Ticket">
+    <id column="ticket_no" jdbcType="INTEGER" property="ticketNo" />
+    <result column="ticket_sellmoney" jdbcType="DOUBLE" property="ticketSellmoney" />
+    <result column="ticket_tax" jdbcType="DOUBLE" property="ticketTax" />
+    <result column="ticket_crs_name" jdbcType="VARCHAR" property="ticketCrsName" />
+    <result column="flight_code" jdbcType="VARCHAR" property="flightCode" />
+    <result column="ticket_booking" jdbcType="INTEGER" property="ticketBooking" />
+    <result column="flight_no" jdbcType="INTEGER" property="flightNo" />
+    <result column="logical_ship" jdbcType="VARCHAR" property="logicalShip" />
+    <result column="ticket_date" jdbcType="DATE" property="ticketDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ticket_no, ticket_sellmoney, ticket_tax, ticket_crs_name, ticket_booking, flight.flight_no,
+    logical_ship,ticket_date,flight_code
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ticket,flight
+    where ticket_no = #{ticketNo,jdbcType=INTEGER} and ticket.flight_no=flight.flight_no
+  </select>
+  <select id="findAllTicket" resultType="com.springmvc.entity.Ticket">
+    select
+    <include refid="Base_Column_List" />
+    from ticket,flight
+    where ticket.flight_no=flight.flight_no
+  </select>
+  <select id="findTicketByCondition" resultType="com.springmvc.entity.Ticket" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ticket,flight
+    <trim prefix="WHERE" prefixOverrides="AND |OR">
+      <if test="ticketSellmoney != null"> AND ticket_sellmoney=#{ticketSellmoney,jdbcType=DOUBLE}</if>
+      <if test="ticketCrsName != null"> AND ticket_crs_name=#{ticketCrsName,jdbcType=VARCHAR}</if>
+      <if test="logicalShip != null"> AND logical_ship=#{logicalShip,jdbcType=VARCHAR}</if>
+      <if test="ticketDate != null"> AND ticket_date=#{ticketDate,jdbcType=DATE}</if>
+      <if test="flightNo != null"> AND ticket.flight_no=#{flightNo,jdbcType=INTEGER}</if>
+      and ticket.flight_no=flight.flight_no
+    </trim>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ticket
+    where ticket_no = #{ticketNo,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.springmvc.entity.Ticket">
+    insert into ticket (ticket_no, ticket_sellmoney, ticket_tax, 
+      ticket_crs_name, ticket_booking, flight_no, 
+      logical_ship,ticket_date)
+    values (#{ticketNo,jdbcType=INTEGER}, #{ticketSellmoney,jdbcType=DOUBLE}, #{ticketTax,jdbcType=DOUBLE}, 
+      #{ticketCrsName,jdbcType=VARCHAR}, #{ticketBooking,jdbcType=INTEGER}, #{flightNo,jdbcType=INTEGER}, 
+      #{logicalShip,jdbcType=VARCHAR}),#{ticketDate,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.springmvc.entity.Ticket">
+    insert into ticket
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="ticketNo != null">
+        ticket_no,
+      </if>
+      <if test="ticketSellmoney != null">
+        ticket_sellmoney,
+      </if>
+      <if test="ticketTax != null">
+        ticket_tax,
+      </if>
+      <if test="ticketCrsName != null">
+        ticket_crs_name,
+      </if>
+      <if test="ticketBooking != null">
+        ticket_booking,
+      </if>
+      <if test="flightNo != null">
+        flight_no,
+      </if>
+      <if test="logicalShip != null">
+        logical_ship,
+      </if>
+      <if test="ticketDate != null">
+        ticket_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="ticketNo != null">
+        #{ticketNo,jdbcType=INTEGER},
+      </if>
+      <if test="ticketSellmoney != null">
+        #{ticketSellmoney,jdbcType=DOUBLE},
+      </if>
+      <if test="ticketTax != null">
+        #{ticketTax,jdbcType=DOUBLE},
+      </if>
+      <if test="ticketCrsName != null">
+        #{ticketCrsName,jdbcType=VARCHAR},
+      </if>
+      <if test="ticketBooking != null">
+        #{ticketBooking,jdbcType=INTEGER},
+      </if>
+      <if test="flightNo != null">
+        #{flightNo,jdbcType=INTEGER},
+      </if>
+      <if test="logicalShip != null">
+        #{logicalShip,jdbcType=VARCHAR},
+      </if>
+      <if test="ticketDate != null">
+        #{ticketDate,jdbcType=DATE}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.springmvc.entity.Ticket">
+    update ticket
+    <set>
+      <if test="ticketSellmoney != null">
+        ticket_sellmoney = #{ticketSellmoney,jdbcType=DOUBLE},
+      </if>
+      <if test="ticketTax != null">
+        ticket_tax = #{ticketTax,jdbcType=DOUBLE},
+      </if>
+      <if test="ticketCrsName != null">
+        ticket_crs_name = #{ticketCrsName,jdbcType=VARCHAR},
+      </if>
+      <if test="ticketBooking != null">
+        ticket_booking = #{ticketBooking,jdbcType=INTEGER},
+      </if>
+      <if test="flightNo != null">
+        flight_no = #{flightNo,jdbcType=INTEGER},
+      </if>
+      <if test="logicalShip != null">
+        logical_ship = #{logicalShip,jdbcType=VARCHAR},
+      </if>
+      <if test="ticketDate != null">
+        ticket_date = #{ticketDate,jdbcType=DATE},
+      </if>
+    </set>
+    where ticket_no = #{ticketNo,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.springmvc.entity.Ticket">
+    update ticket
+    set ticket_sellmoney = #{ticketSellmoney,jdbcType=DOUBLE},
+      ticket_tax = #{ticketTax,jdbcType=DOUBLE},
+      ticket_crs_name = #{ticketCrsName,jdbcType=VARCHAR},
+      ticket_booking = #{ticketBooking,jdbcType=INTEGER},
+      flight_no = #{flightNo,jdbcType=INTEGER},
+      ticket_date = #{ticketDate,jdbcType=DATE},
+      logical_ship = #{logicalShip,jdbcType=VARCHAR}
+    where ticket_no = #{ticketNo,jdbcType=INTEGER}
+  </update>
+</mapper>
